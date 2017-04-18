@@ -1,5 +1,5 @@
 # RLQuickLoginHelper
-####A tool which helps you remember and switch accounts during debuging your app
+###A tool which helps you remember and switch accounts during debuging your app
 
 ---
 
