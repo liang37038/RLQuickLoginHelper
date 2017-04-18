@@ -1,30 +1,30 @@
 //
-//  QXLoginHelperTableViewController.m
-//  qingxun
+//  RLQuickLoginHelper.m
+//  RLQuickLoginHelperDemo
 //
-//  Created by Richard Liang on 16/2/16.
+//  Created by Richard Liang on 2017/4/18.
 //
 //
 
-#import "LoginHelperTableViewController.h"
-@interface LoginHelperTableViewController ()
+#import "RLQuickLoginHelper.h"
+@interface RLQuickLoginHelper ()
 
 @property (strong, nonatomic) NSMutableArray *accountDictsArray;
 
 @property (strong, nonatomic) UIAlertController *alertController;
 
-@property (weak, nonatomic) id<LoginHelperDelegate>loginDelegate;
+@property (weak, nonatomic) id<RLQuickLoginHelperDelegate>loginDelegate;
 
 @end
 
 
-@implementation LoginHelperTableViewController
+@implementation RLQuickLoginHelper
 
-+ (LoginHelperTableViewController *)shareViewController{
-    static LoginHelperTableViewController *_shareViewController = nil;
++ (RLQuickLoginHelper *)sharedHelper{
+    static RLQuickLoginHelper *_shareViewController = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _shareViewController = [[LoginHelperTableViewController alloc]initWithStyle:UITableViewStylePlain];
+        _shareViewController = [[RLQuickLoginHelper alloc]initWithStyle:UITableViewStylePlain];
     });
     [_shareViewController loadDefaultData];
     return _shareViewController;
@@ -44,20 +44,6 @@
     NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
     self.accountDictsArray = [[userDefault arrayForKey:AccountDictsArray] mutableCopy];
     if (!self.accountDictsArray || self.accountDictsArray.count == 0) {
-//
-//        NSDictionary *student1 = @{
-//                                 AccountName:@"18520229661",
-//                                 AccountPasswd:@"123456",
-//                                 };
-//        NSDictionary *coach2 = @{
-//                                 AccountName:@"mason@ganguo.hk",
-//                                 AccountPasswd:@"123456",
-//                                 };
-//        NSDictionary *coach3 = @{
-//                                 AccountName:@"admin@ganguo.hk",
-//                                 AccountPasswd:@"123456",
-//                                 };
-
         self.accountDictsArray = [NSMutableArray array];
         [userDefault setObject:[self.accountDictsArray mutableCopy] forKey:AccountDictsArray];
     }
@@ -80,8 +66,8 @@
         }
         NSDictionary *newAccountDict = @{
                                          AccountName:account,
-                                        AccountPasswd:password
-                                             };
+                                         AccountPasswd:password
+                                         };
         [accountDictsArray addObject:newAccountDict];
     }else{
         accountDictsArray = [NSMutableArray array];
@@ -95,15 +81,13 @@
     [userDefault synchronize];
 }
 
-- (void)showInLoginViewController:(id<LoginHelperDelegate>)delegate{
+- (void)showInLoginViewController:(UIViewController<RLQuickLoginHelperDelegate>*)delegate{
     self.loginDelegate = delegate;
-    if ([delegate isKindOfClass:[UIViewController class]]) {
-        NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
-        self.accountDictsArray = [[userDefault arrayForKey:AccountDictsArray] mutableCopy];
-        if (self.accountDictsArray.count > 0) {
-            UIViewController *vc = (UIViewController *)delegate;
-            [vc presentViewController:self.alertController animated:YES completion:nil];
-        }
+    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+    self.accountDictsArray = [[userDefault arrayForKey:AccountDictsArray] mutableCopy];
+    if (self.accountDictsArray.count > 0) {
+        UIViewController *vc = (UIViewController *)delegate;
+        [vc presentViewController:self.alertController animated:YES completion:nil];
     }
 }
 
@@ -128,7 +112,7 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"LoginCell" forIndexPath:indexPath];
     NSDictionary *accountDict = [self.accountDictsArray objectAtIndex:indexPath.row];
     
-    NSString *accountName = STRING_OR_EMPTY([accountDict objectForKey:AccountName]);
+    NSString *accountName = [accountDict objectForKey:AccountName];
     
     cell.textLabel.text = [NSString stringWithFormat:@"%@", accountName];
     return cell;
@@ -139,8 +123,8 @@
 }
 
 - (CGSize)preferredContentSize{
-    if (self.tableView.contentSize.height > 2/3 * SCREEN_HEIGHT) {
-        return CGSizeMake(self.tableView.contentSize.width, SCREEN_HEIGHT * 2/3);
+    if (self.tableView.contentSize.height > 2/3 * [UIScreen mainScreen].bounds.size.width) {
+        return CGSizeMake(self.tableView.contentSize.width, [UIScreen mainScreen].bounds.size.width * 2/3);
     }
     return self.tableView.contentSize;
 }
