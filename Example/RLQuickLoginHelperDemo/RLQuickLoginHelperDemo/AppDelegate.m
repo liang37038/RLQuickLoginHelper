@@ -1,6 +1,6 @@
 //
 //  AppDelegate.m
-//  RLQuickLoginHelper
+//  RLQuickLoginHelperDemo
 //
 //  Created by Richard Liang on 2017/4/18.
 //  Copyright © 2017年 lwj. All rights reserved.
